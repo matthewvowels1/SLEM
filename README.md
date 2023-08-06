@@ -16,6 +16,31 @@ What SLEM/DAGLearner does:
 - provides ATE estimates for all paths in the model
 - provides estimates for any given intervention
 
+
+Options:
+
+- Users can specify a list of candidate learners according to the following options:
+  - 'LR': Linear or logistic regression (depending on variable type)
+  - 'RF': Random Forest
+  - 'Elastic': Elastic Net
+  - 'MLP': MultiLayer Perceptron
+  - 'SV': Support Vector Machine
+  - 'AB': AdaBoost
+  - 'BR': Bayesian Ridge or Naive Bayes
+  - 'poly': polynomial regression
+  - e.g. ```daglearner = DAGLearner(dag=DAG,  var_types=var_types, k=6, learner_list=['AB','LR'])```
+- If a list of such learners is not specified, all will be used
+- The number of folds in the k-fold superlearner fitting process k
+
+
+DAGLearner includes the following methods:
+
+- ```daglearner.fit(data=df, verbose=True)``` (for fitting the superlearner to a given dataset)
+- ```daglearner.get_0_1_ATE(data=df)``` for extracting all average path coefficients for do(0) vs. do(1) interventions 
+- ```daglearner.predict(data=df, var='Y')``` for generating predictions for a specific variable
+- ```daglearner.infer(data=df, intervention_nodes_vals={'X': 0, 'C':0})``` for generating (causal) predictions for a specific intervention
+
+
 The ```example_usage.ipynb``` includes ways to integrate it into a pipeline with bootstrapping and plotting.
 
 
