@@ -48,6 +48,8 @@ The ```example_usage.ipynb``` includes ways to integrate it into a pipeline with
 
 In terminal (e.g. with specific venv or conda environment):
 ```bash 
+conda create -n slem_env -y python=3.9 
+conda activate slem_env
 pip3 install slem-learn
 ```
 
