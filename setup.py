@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.5'
+VERSION = '0.0.7'
 DESCRIPTION = 'Super Learner Equation Modeling Package'
 LONG_DESCRIPTION = 'Super Learner Equation Modeling for Causal Inference on DAGs with Machine Learning.'
 
@@ -14,7 +14,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=LONG_DESCRIPTION,
     packages=find_packages(),
-    install_requires=['sklearn', 'scipy', 'networkx', 'pandas', 'tqdm'],
+    install_requires=['scikit-learn', 'scipy', 'networkx', 'pandas', 'tqdm'],
     keywords=['python', 'statistics', 'causality', 'causal inference', 'machine learning', 'super learner', 'graphs', 'DAGs'],
     classifiers=[
         "Development Status :: 3 - Alpha",
