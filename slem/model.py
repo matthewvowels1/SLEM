@@ -1,12 +1,9 @@
-import numpy as np
-from super_learner import SuperLearner
-from sklearn.model_selection import KFold
+from .super_learner import SuperLearner
+from .utils import *
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error, explained_variance_score,\
     median_absolute_error, balanced_accuracy_score, accuracy_score, precision_score, recall_score, f1_score
 import joblib
 import os
-import networkx as nx
-import utils
 import tqdm
 import pandas as pd
 
@@ -35,8 +32,8 @@ class DAGLearner:
         self.var_types = var_types
         self.k = k
         self.save_models = save_models
-        dag = utils.reorder_dag(dag=dag)  # topologically sort
-        self.causal_ordering = utils.get_full_ordering(dag)  # get causal ordering of each (sorted) variable
+        dag = reorder_dag(dag=dag)  # topologically sort
+        self.causal_ordering = get_full_ordering(dag)  # get causal ordering of each (sorted) variable
         self.dag = dag  # update dag with sorted dag
         self.seed = seed
 

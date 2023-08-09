@@ -46,12 +46,18 @@ The ```example_usage.ipynb``` includes ways to integrate it into a pipeline with
 
 # Quickstart:
 
-```python
+In terminal (e.g. with specific venv or conda environment):
+```bash 
+pip3 install slem-learn
+```
 
-from model import DAGLearner
+
+In Python:
+```python
+from slem import DAGLearner
 import pandas as pd
-import networkx as nx 
-import numpy as np 
+import networkx as nx
+import numpy as np
 
 # generate data
 ux = np.random.randn(500, 1)
@@ -60,7 +66,7 @@ uy = np.random.randn(500, 1)
 
 C = uc
 X = 0.7 * C + ux
-Y = 0.7*X + 0.6 * C + uy
+Y = 0.7 * X + 0.6 * C + uy
 
 # put data in pandas dataframe
 df = pd.DataFrame(np.concatenate([C, X, Y], 1))
@@ -72,7 +78,7 @@ var_types = {'C': 'cont', 'X': 'cont', 'Y': 'cont'}
 DAG = nx.DiGraph()
 DAG.add_edges_from([('C', 'Y'), ('C', 'X'), ('X', 'Y')])
 
-daglearner = DAGLearner(dag=DAG,  var_types=var_types, k=6)
+daglearner = DAGLearner(dag=DAG, var_types=var_types, k=6)
 # fit the superlearners:
 daglearner.fit(data=df, verbose=True)
 # estimate all ATEs for do(0) and do(1) interventions:
