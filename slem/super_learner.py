@@ -39,7 +39,14 @@ def combiner_solve(x, y):
 class SuperLearner(object):
 	def __init__(self, output: str, k: int, standardized_outcome: bool = False, calibration: bool = True,
 	             learner_list: list = None):
-		self.learner_list = learner_list
+
+		if learner_list is None:
+			self.learner_list = ['Elastic', 'LR', 'MLP', 'SV', 'AB', 'RF', 'BR', 'poly']
+		else:
+			self.learner_list = learner_list
+
+		self.orig_learner_list = self.learner_list
+
 		self.num_learners = len(learner_list)
 		self.k = k  # number of cross validation folds
 		self.beta = None
@@ -58,7 +65,7 @@ class SuperLearner(object):
 
 	def _init_learners(self):
 		est_dict = {}
-		for learner in self.learner_list:
+		for learner in self.orig_learner_list:
 			if learner == 'Elastic':
 				l = 'Elastic0.25'
 				est_dict[l] = ElasticNet(alpha=0.25)
@@ -77,9 +84,23 @@ class SuperLearner(object):
 			elif learner == 'MLP':
 				if ((self.output == 'cls') or (
 						self.output == 'proba') or (self.output == 'cat')):
-					est_dict[learner] = MLPClassifier(alpha=0.001, max_iter=2000)
+					l = 'MLP-1'
+					est_dict[l] = MLPClassifier(hidden_layer_sizes=(100, 100, 100,), alpha=0.001, max_iter=5000)
+					l = 'MLP-2'
+					est_dict[l] = MLPClassifier(hidden_layer_sizes=(50, 50, 50,), alpha=0.001, max_iter=4000)
+					l = 'MLP-3'
+					est_dict[l] = MLPClassifier(hidden_layer_sizes=(50, 50,), alpha=0.001, max_iter=3000)
+					l = 'MLP-4'
+					est_dict[l] = MLPClassifier(hidden_layer_sizes=(30, 30,), alpha=0.001, max_iter=2000)
 				else:
-					est_dict[learner] = MLPRegressor(alpha=0.001, max_iter=2000)
+					l = 'MLP-1'
+					est_dict[l] = MLPRegressor(hidden_layer_sizes=(100, 100, 100,), alpha=0.001, max_iter=5000)
+					l = 'MLP-2'
+					est_dict[l] = MLPRegressor(hidden_layer_sizes=(50, 50, 50,), alpha=0.001, max_iter=4000)
+					l = 'MLP-3'
+					est_dict[l] = MLPRegressor(hidden_layer_sizes=(50, 50,), alpha=0.001, max_iter=3000)
+					l = 'MLP-4'
+					est_dict[l] = MLPRegressor(hidden_layer_sizes=(30, 30,), alpha=0.001, max_iter=2000)
 			elif learner == 'SV':
 				if ((self.output == 'cls') or (
 						self.output == 'proba') or (self.output == 'cat')):
@@ -89,16 +110,44 @@ class SuperLearner(object):
 			elif learner == 'AB':
 				if ((self.output == 'cls') or (
 						self.output == 'proba') or (self.output == 'cat')):
-					est_dict[learner] = AdaBoostClassifier()
+					l = 'AB-1'
+					est_dict[l] = AdaBoostClassifier(n_estimators=100)
+					l = 'AB-2'
+					est_dict[l] = AdaBoostClassifier(n_estimators=50)
+					l = 'AB-3'
+					est_dict[l] = AdaBoostClassifier(n_estimators=25)
+					l = 'AB-4'
+					est_dict[l] = AdaBoostClassifier(n_estimators=10)
 				else:
-					est_dict[learner] = AdaBoostRegressor()
+					l = 'AB-1'
+					est_dict[l] = AdaBoostRegressor(n_estimators=100)
+					l = 'AB-2'
+					est_dict[l] = AdaBoostRegressor(n_estimators=50)
+					l = 'AB-3'
+					est_dict[l] = AdaBoostRegressor(n_estimators=25)
+					l = 'AB-4'
+					est_dict[l] = AdaBoostRegressor(n_estimators=10)
 
 			elif learner == 'RF':
 				if ((self.output == 'cls') or (
 						self.output == 'proba') or (self.output == 'cat')):
-					est_dict[learner] = RandomForestClassifier()
+					l = 'RF-1'
+					est_dict[l] = RandomForestClassifier(n_estimators=200)
+					l = 'RF-2'
+					est_dict[l] = RandomForestClassifier(n_estimators=100)
+					l = 'RF-3'
+					est_dict[l] = RandomForestClassifier(n_estimators=50)
+					l = 'RF-4'
+					est_dict[l] = RandomForestClassifier(n_estimators=20)
 				else:
-					est_dict[learner] = RandomForestRegressor()
+					l = 'RF-1'
+					est_dict[l] = RandomForestRegressor(n_estimators=300)
+					l = 'RF-2'
+					est_dict[l] = RandomForestRegressor(n_estimators=100)
+					l = 'RF-3'
+					est_dict[l] = RandomForestRegressor(n_estimators=50)
+					l = 'RF-4'
+					est_dict[l] = RandomForestRegressor(n_estimators=20)
 
 			elif (learner == 'BR') or (learner == 'NB'):
 				if ((self.output == 'cls') or (
@@ -112,7 +161,8 @@ class SuperLearner(object):
 
 		self.est_dict = est_dict
 		self.num_learners = len(list(self.est_dict.keys()))
-		self.learner_list = list(self.est_dict.keys())
+		self.learner_list = list(est_dict.keys())
+
 
 
 	def fit(self, X, y):

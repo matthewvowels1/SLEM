@@ -24,6 +24,8 @@ class DAGLearner:
 
         if learner_list is None:
             learner_list = ['Elastic', 'LR', 'MLP', 'SV', 'AB', 'RF', 'BR', 'poly']
+
+
         self.learner_list = learner_list
         self.baseline = baseline
         if self.baseline:
@@ -49,12 +51,12 @@ class DAGLearner:
         for i, var in enumerate(self.causal_ordering.keys()):
             order = self.causal_ordering[var]
             var_type = self.var_types[var]
-
             if order >= 1:
                 if var_type == 'cont':  # get types for superlearner
                     output_type = 'reg'
                 elif var_type == 'cat' or var_type == 'bin':
                     output_type = 'cat'
+
                 self.models[var] = SuperLearner(output=output_type, k=self.k,
                                                 standardized_outcome=False,
                                                 calibration=False, learner_list=self.learner_list)

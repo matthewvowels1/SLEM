@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.7'
+VERSION = '0.0.9'
 DESCRIPTION = 'Super Learner Equation Modeling Package'
 LONG_DESCRIPTION = 'Super Learner Equation Modeling for Causal Inference on DAGs with Machine Learning.'
 
