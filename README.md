@@ -55,8 +55,9 @@ pip3 install slem-learn
 
 
 In Python:
+
 ```python
-from slem import DAGLearner
+from src.slem import DAGLearner
 import pandas as pd
 import networkx as nx
 import numpy as np
