@@ -2,7 +2,7 @@ name: SLEM CI
 
 on:
   push:
-    branches ates: [ main ]
+    branches: [ main ]
     tags:
       - ci_run*
   pull_request:
