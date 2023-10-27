@@ -26,7 +26,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-${{ hashFiles('requirements_devtest.txt') }}  # Update this line
         restore-keys: |
           ${{ runner.os }}-pip-
     - name: Install dependencies
@@ -37,7 +37,7 @@ jobs:
         command: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          pip install -r requirements_devtest.txt
     - name: Run tests with pytest
       run: |
         pytest tests/
