@@ -1,0 +1,82 @@
+import numpy as np
+
+class ModelMetrics:
+    def __init__(self, observed_data, reproduced_data, baseline_reproduced_data=None):
+        self.observed_data = observed_data
+        self.reproduced_data = reproduced_data
+        self.baseline_reproduced_data = baseline_reproduced_data
+        self.observed_cov = None
+        self.reproduced_cov = None
+        self.df = None
+
+    @staticmethod
+    def compute_covariance(data):
+        return np.cov(data, rowvar=False)
+    
+    # PROBLEM HERE? Check this out https://chat.openai.com/c/53f0381e-077c-4c1e-a051-80758c22c2ba
+    def chi_squared(self, a_reproduced_cov, epsilon=1e-10):
+        diff = self.observed_cov - a_reproduced_cov
+        # Regularization: Add a small value to the diagonal to avoid singularity
+        regularized_reproduced_cov = a_reproduced_cov + np.eye(a_reproduced_cov.shape[0]) * epsilon
+        chi2 = np.trace(np.dot(np.dot(diff, np.linalg.inv(regularized_reproduced_cov)), diff))
+        return chi2
+
+    def srmr(self):
+        diff = self.observed_cov - self.reproduced_cov
+        return np.sqrt(np.mean(diff**2))
+
+    def rmsea(self, a_reproduced_cov, dof):
+        chi2 = self.chi_squared(a_reproduced_cov=a_reproduced_cov)
+        rmsea_value = np.sqrt((chi2 - dof) / (dof * self.observed_data.shape[0]))
+        return rmsea_value
+
+    def cfi(self, a_reproduced_cov, base_chi2):
+        chi2 = self.chi_squared(a_reproduced_cov=a_reproduced_cov)
+        return 1 - (chi2 / base_chi2)
+    
+    @staticmethod
+    def tli(chi2, base_chi2, dof, dof_null):
+        num = (chi2 / dof) - 1
+        denom = (base_chi2 / dof_null) - 1
+        return 1 - (num / denom)
+
+    def _evaluate(self):
+        self.observed_cov = self.compute_covariance(self.observed_data)
+        self.reproduced_cov = self.compute_covariance(self.reproduced_data)
+        p = self.observed_data.shape[1]
+        self.df = p * (p + 1) / 2
+
+    def _compute_metrics(self):
+        metrics = {
+            'chi_squared': self.chi_squared(a_reproduced_cov = self.reproduced_cov),
+            'srmr': self.srmr(),
+            'rmsea': self.rmsea(a_reproduced_cov=self.reproduced_cov, dof=self.observed_data.shape[1])
+        }
+        
+        if self.baseline_reproduced_data is not None:
+            baseline_cov = self.compute_covariance(self.baseline_reproduced_data)
+            base_chi2 = self.chi_squared(a_reproduced_cov=baseline_cov)            
+            metrics['cfi'] = self.cfi(a_reproduced_cov=self.reproduced_cov, base_chi2= base_chi2)
+            df_null = self.observed_data.shape[1]
+            metrics['tli'] = self.tli(chi2 = metrics['chi_squared'], base_chi2 = base_chi2, dof=self.observed_data.shape[1], dof_null=df_null)
+            
+        return metrics
+
+    def display(self):
+        self._evaluate()
+        print("Shape of Observed Covariance Matrix:", self.observed_cov.shape)
+        print("Shape of Reproduced Covariance Matrix:", self.reproduced_cov.shape)
+        print("\nFit Statistics:")
+        metrics = self._compute_metrics()
+        for key, value in metrics.items():
+            print(f"{key}: {value}")
+
+
+int_val_nodes = {'X': 0}
+interventional_dataset0 = daglearner.infer(data=df, intervention_nodes_vals=int_val_nodes)
+
+int_val_nodes ={'X': 1}
+interventional_dataset1 = daglearner.infer(data=df, intervention_nodes_vals=int_val_nodes)
+
+a_fit = ModelMetrics(observed_data = df, reproduced_data = interventional_dataset0, baseline_reproduced_data = interventional_dataset1)
+a_fit.display()
