@@ -1,5 +1,7 @@
 # SLEM - Super Learner Equation Modeling
 
+Vowels, M.J. (2023) SLEM: Machine Learning for Path Modeling and Causal Inference with Super Learner Equation Modeling. https://arxiv.org/abs/2308.04365
+
 SLEM / DAGLearner takes in some data, a DAG (as a networkx graph), and a dictionary of variable types, and implements Super Learners for every variable with parents in that DAG.
 
 This enables one to perform effect-size estimation without the usual constraints on functional form associated with (linear) path models / structural equation models.
